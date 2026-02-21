@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row g-3">
+  <div class="col-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <span class="icon-chip"><i class="bi bi-person-plus"></i></span>
+              <h4 class="mb-0">Cadastro</h4>
+            </div>
+            <div class="text-muted small">
+              Cadastre pessoas, setores e motos. Use os filtros para achar rápido.
+              <span class="ms-1">•</span>
+              <span class="ms-1">Exibindo: <strong>{{ pessoas|length }}</strong></span>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2 flex-wrap">
+            <a class="btn btn-outline-secondary btn-fixed" href="/listas">
+              <i class="bi bi-list-check"></i> Gerenciar Listas
+            </a>
+            <a class="btn btn-outline-light btn-fixed" href="/cadastro">
+              <i class="bi bi-arrow-clockwise"></i> Atualizar
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Novo cadastro -->
+  <div class="col-12 col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-header header-soft d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+          <span class="header-icon"><i class="bi bi-plus-circle"></i></span>
+          <strong>Novo cadastro</strong>
+        </div>
+        <span class="badge text-bg-secondary">Admin</span>
+      </div>
+
+      <div class="card-body">
+        <form method="post" action="/cadastro" class="row g-3">
+          {{ csrf_input()|safe }}
+
+          <div class="col-12">
+            <label class="form-label">Nome</label>
+            <input type="text"
+                   name="nome"
+                   class="form-control"
+                   required
+                   placeholder="Ex: João da Silva / Moto UBS X / Setor Endemias">
+            <div class="form-text">
+              Dica: use um padrão de nomes para facilitar a busca.
+            </div>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Categoria</label>
+            <select name="categoria" class="form-select" required>
+              <option value="" selected disabled>(Selecione)</option>
+              {% for c in categorias_lista %}
+                <option value="{{ c }}">{{ c }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Equipe / UBS / Setor</label>
+            <select name="equipe" class="form-select">
+              <option value="">(Sem equipe)</option>
+              {% for e in equipes_lista %}
+                <option value="{{ e }}">{{ e }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-12">
+            <label class="form-label">Cota mensal (L)</label>
+            <input type="number"
+                   step="0.01"
+                   name="cota"
+                   class="form-control"
+                   placeholder="Ex: 120">
+            <div class="form-text">
+              Se deixar vazio, a cota fica 0.
+            </div>
+          </div>
+
+          <div class="col-12 d-grid">
+            {% if categorias_lista|length == 0 %}
+              <button class="btn btn-secondary btn-fixed" disabled>
+                <i class="bi bi-exclamation-circle"></i>
+                Cadastre uma categoria primeiro
+              </button>
+              <div class="small text-muted mt-1">
+                Vá em <strong>Listas</strong> → Categorias.
+              </div>
+            {% else %}
+              <button class="btn btn-primary btn-fixed" type="submit">
+                <i class="bi bi-save"></i> Cadastrar
+              </button>
+            {% endif %}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Buscar cadastrados -->
+  <div class="col-12 col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-header header-soft-success d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+          <span class="header-icon"><i class="bi bi-search"></i></span>
+          <strong>Buscar cadastrados</strong>
+        </div>
+        {% if filtro_nome or filtro_categoria or filtro_equipe %}
+          <span class="badge text-bg-secondary">Filtrado</span>
+        {% else %}
+          <span class="badge text-bg-secondary">Todos</span>
+        {% endif %}
+      </div>
+
+      <div class="card-body">
+        <form method="get" action="/cadastro" class="row g-2 align-items-end">
+          <div class="col-12 col-md-4">
+            <label class="form-label">Nome</label>
+            <input type="text"
+                   name="nome"
+                   value="{{ filtro_nome or '' }}"
+                   class="form-control"
+                   placeholder="Digite um nome...">
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label class="form-label">Categoria</label>
+            <select name="categoria" class="form-select">
+              <option value="">(Todas)</option>
+              {% for c in categorias_lista %}
+                <option value="{{ c }}"
+                        {% if (filtro_categoria or '') == c %}selected{% endif %}>
+                  {{ c }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <label class="form-label">Equipe</label>
+            <select name="equipe" class="form-select">
+              <option value="">(Todas)</option>
+              {% for e in equipes_lista %}
+                <option value="{{ e }}"
+                        {% if (filtro_equipe or '') == e %}selected{% endif %}>
+                  {{ e }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="col-12 d-flex gap-2 mt-2">
+            <button class="btn btn-outline-primary btn-fixed" type="submit">
+              <i class="bi bi-funnel"></i> Buscar
+            </button>
+            <a class="btn btn-outline-secondary btn-fixed" href="/cadastro">
+              <i class="bi bi-x-circle"></i> Limpar
+            </a>
+          </div>
+        </form>
+
+        <hr class="my-3">
+
+        {% if pessoas|length == 0 %}
+          <div class="empty-state">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <i class="bi bi-inboxes fs-5"></i>
+              <strong>Nenhum cadastro encontrado</strong>
+            </div>
+            <div class="text-muted small">
+              Tente limpar os filtros ou cadastre uma nova pessoa ao lado.
+            </div>
+          </div>
+        {% else %}
+          <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Nome</th>
+                  <th>Categoria</th>
+                  <th>Equipe</th>
+                  <th>Cota</th>
+                  <th class="text-end">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for p in pessoas %}
+                <tr>
+                  <td class="fw-semibold">{{ p[1] }}</td>
+                  <td>{{ p[2] }}</td>
+                  <td>
+                    {% if p[3] %}
+                      {{ p[3] }}
+                    {% else %}
+                      <span class="text-muted">(Sem equipe)</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <span class="badge text-bg-secondary badge-litros">
+                      {{ ('%.2f'|format(p[4] or 0)).rstrip('0').rstrip('.') }}L
+                    </span>
+                  </td>
+                  <td class="text-end">
+                    <div class="d-inline-flex gap-2">
+
+                      <a class="btn btn-sm btn-outline-primary btn-fixed"
+                         href="/cadastro/editar/{{ p[0] }}">
+                        <i class="bi bi-pencil"></i> Editar
+                      </a>
+
+                      <form method="post"
+                            action="/cadastro/apagar/{{ p[0] }}"
+                            class="d-inline"
+                            onsubmit="return confirm(
+                              'Deseja apagar o cadastro de: {{ p[1] }}?\\n\\nIsso também apaga as entregas vinculadas.'
+                            )">
+                        {{ csrf_input()|safe }}
+                        <button type="submit"
+                                class="btn btn-sm btn-outline-danger btn-fixed">
+                          <i class="bi bi-trash"></i> Apagar
+                        </button>
+                      </form>
+
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-xxl">
+
+  <!-- Header -->
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <span class="icon-chip"><i class="bi bi-clipboard-data"></i></span>
+        <h4 class="mb-0">Auditoria</h4>
+      </div>
+      <div class="text-muted small">
+        Registro de ações realizadas no sistema.
+      </div>
+    </div>
+
+    <div class="d-flex align-items-center gap-3">
+      <small class="text-muted">Mostrando até 300 registros</small>
+
+      {% if u and u.get('role') == 'admin' %}
+        <form method="post"
+              action="/auditoria/apagar-tudo"
+              onsubmit="return confirm(
+                'ATENÇÃO!\n\nIsso irá apagar todos os registros atuais da auditoria.\n\nEssa ação será registrada.\n\nDeseja continuar?'
+              );"
+              class="d-inline">
+          {{ csrf_input()|safe }}
+          <button class="btn btn-outline-danger btn-fixed" type="submit">
+            <i class="bi bi-trash"></i> Limpar auditoria
+          </button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <form class="card mb-3" method="get">
+    <div class="card-body">
+      <div class="row g-2">
+
+        <div class="col-md-4">
+          <label class="form-label">Busca livre</label>
+          <input class="form-control"
+                 name="q"
+                 value="{{ q }}"
+                 placeholder="ex: entrega, estoque, apagar...">
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Ação</label>
+          <select class="form-select" name="acao">
+            <option value="">(Todas)</option>
+            {% for a in acoes %}
+              <option value="{{ a }}" {% if a == acao_sel %}selected{% endif %}>{{ a }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Entidade</label>
+          <select class="form-select" name="entidade">
+            <option value="">(Todas)</option>
+            {% for e in entidades %}
+              <option value="{{ e }}" {% if e == entidade_sel %}selected{% endif %}>{{ e }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-2">
+          <label class="form-label">Usuário</label>
+          <input class="form-control"
+                 name="username"
+                 value="{{ username_sel }}"
+                 placeholder="admin, usuario...">
+        </div>
+
+        <div class="col-md-1">
+          <label class="form-label">De</label>
+          <input class="form-control js-date"
+                 type="text"
+                 name="ini"
+                 value="{{ ini }}"
+                 placeholder="dd/mm/aaaa"
+                 autocomplete="off">
+        </div>
+
+        <div class="col-md-1">
+          <label class="form-label">Até</label>
+          <input class="form-control js-date"
+                 type="text"
+                 name="fim"
+                 value="{{ fim }}"
+                 placeholder="dd/mm/aaaa"
+                 autocomplete="off">
+        </div>
+
+        <div class="col-12 d-flex gap-2 mt-2">
+          <button class="btn btn-primary btn-fixed" type="submit">
+            <i class="bi bi-funnel"></i> Filtrar
+          </button>
+
+          <a class="btn btn-outline-secondary btn-fixed" href="/auditoria">
+            <i class="bi bi-x-circle"></i> Limpar
+          </a>
+
+          <a class="btn btn-outline-primary btn-fixed ms-auto" href="/usuarios">
+            <i class="bi bi-arrow-left"></i> Voltar
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </form>
+
+  <!-- Tabela -->
+  <div class="card shadow-sm">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>#</th>
+            <th>Data/Hora</th>
+            <th>Usuário</th>
+            <th>Perfil</th>
+            <th>Ação</th>
+            <th>Entidade</th>
+            <th>ID</th>
+            <th>Detalhes</th>
+            <th>IP</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          {% for r in rows %}
+          <tr>
+            <td>{{ r[0] }}</td>
+            <td>{{ r[1] }}</td>
+
+            <td>
+              {{ r[3] or r[2] }}
+              {% if r[4] %}
+                <span class="text-muted">({{ r[4] }})</span>
+              {% endif %}
+            </td>
+
+            <td>
+              <span class="badge {% if (r[5] or '') == 'admin' %}text-bg-primary{% else %}text-bg-secondary{% endif %}">
+                {{ r[5] or '' }}
+              </span>
+            </td>
+
+            <td>
+              <span class="badge text-bg-secondary">{{ r[6] or '' }}</span>
+            </td>
+
+            <td>{{ r[7] or "" }}</td>
+            <td>{{ r[8] or "" }}</td>
+
+            <td class="text-truncate" style="max-width:520px;">
+              {{ r[9] or "" }}
+            </td>
+
+            <td>{{ r[10] or "" }}</td>
+          </tr>
+          {% endfor %}
+
+          {% if rows|length == 0 %}
+          <tr>
+            <td colspan="9" class="text-center text-muted py-4">
+              Nenhum registro encontrado.
+            </td>
+          </tr>
+          {% endif %}
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+{% endblock %}

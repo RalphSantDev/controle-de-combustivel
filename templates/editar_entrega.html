@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Header -->
+<div class="card shadow-sm mb-3">
+  <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <span class="icon-chip"><i class="bi bi-pencil"></i></span>
+        <h4 class="mb-0">Editar Entrega</h4>
+      </div>
+      <div class="text-muted small">
+        Atualize data, posto, quantidade, combustível e observação.
+      </div>
+    </div>
+
+    <a class="btn btn-outline-secondary btn-fixed" href="/entrega">
+      <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+  </div>
+</div>
+
+<!-- Formulário -->
+<div class="card shadow-sm">
+  <div class="card-header header-soft d-flex align-items-center gap-2">
+    <span class="header-icon"><i class="bi bi-truck"></i></span>
+    <strong>Dados da entrega</strong>
+  </div>
+
+  <div class="card-body">
+    <form method="post" class="row g-3" autocomplete="off">
+      {{ csrf_input()|safe }}
+
+      <div class="col-12 col-md-6">
+        <label class="form-label">Para</label>
+        <select name="pessoa_id" required class="form-select">
+          {% for p in pessoas %}
+            <option value="{{ p[0] }}" {% if p[0] == entrega[1] %}selected{% endif %}>
+              {{ p[1] }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <label class="form-label">Data</label>
+        <!-- backend espera YYYY-MM-DD -->
+        <input type="date"
+               name="data"
+               value="{{ entrega[3] }}"
+               class="form-control"
+               required>
+      </div>
+
+      <!-- POSTO -->
+      {% set posto_atual = (entrega[6] if (entrega|length) > 6 else 'CIDADE') %}
+      {% set posto_atual = (posto_atual or 'CIDADE')|upper %}
+      {% if posto_atual == 'PONTÃO' %}
+        {% set posto_atual = 'PONTAO' %}
+      {% endif %}
+
+      <div class="col-12 col-md-6">
+        <label class="form-label">Posto</label>
+        <select name="posto" class="form-select" required>
+          <option value="CIDADE" {% if posto_atual == 'CIDADE' %}selected{% endif %}>Cidade</option>
+          <option value="ESTRADA" {% if posto_atual == 'ESTRADA' %}selected{% endif %}>Estrada</option>
+          <option value="PONTAO" {% if posto_atual == 'PONTAO' %}selected{% endif %}>Pontão</option>
+        </select>
+        <div class="form-text">Onde a pessoa pegou o combustível.</div>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <label class="form-label">Quantidade (L)</label>
+        <input type="number"
+               step="0.01"
+               name="quantidade"
+               class="form-control"
+               value="{{ entrega[2] }}"
+               required>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <label class="form-label">Combustível</label>
+        <select name="combustivel" class="form-select" required>
+          <option value="gasolina" {% if entrega[5] == 'gasolina' %}selected{% endif %}>
+            Gasolina
+          </option>
+          <option value="diesel" {% if entrega[5] == 'diesel' %}selected{% endif %}>
+            Diesel
+          </option>
+        </select>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Observação</label>
+        <input type="text"
+               name="observacao"
+               class="form-control"
+               value="{{ entrega[4] or '' }}">
+      </div>
+
+      <div class="col-12 d-flex gap-2 mt-2">
+        <button class="btn btn-primary btn-fixed" type="submit">
+          <i class="bi bi-save"></i> Salvar alterações
+        </button>
+
+        <a class="btn btn-outline-secondary btn-fixed" href="/entrega">
+          <i class="bi bi-x-circle"></i> Cancelar
+        </a>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+{% endblock %}

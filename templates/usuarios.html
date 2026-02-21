@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+  <div class="card shadow-sm">
+    <div class="card-header header-soft d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <span class="header-icon"><i class="bi bi-people"></i></span>
+        <div>
+          <div class="h5 mb-0">Usuários</div>
+          <small class="text-muted">
+            Admin pode criar, desativar/reativar, alterar login, alterar nome exibido e redefinir senha.
+          </small>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-primary btn-fixed" href="/auditoria">
+          <i class="bi bi-clipboard-data"></i> Auditoria
+        </a>
+      </div>
+    </div>
+
+    <div class="card-body">
+
+      <!-- Criar usuário -->
+      <form class="card mb-3 border-0 shadow-sm" method="post" action="/usuarios/criar" autocomplete="off">
+        {{ csrf_input()|safe }}
+        <div class="card-header header-soft">
+          <div class="fw-semibold"><i class="bi bi-person-plus me-1"></i> Criar novo usuário</div>
+        </div>
+
+        <div class="card-body">
+          <div class="row g-2">
+            <div class="col-md-3">
+              <label class="form-label">Login</label>
+              <input class="form-control" name="username" placeholder="ex: raphael" required>
+              <div class="form-text">3-32: letras/números e . _ -</div>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Nome exibido</label>
+              <input class="form-control" name="nome_exibicao" placeholder="ex: Raphael Santana">
+            </div>
+
+            <div class="col-md-2">
+              <label class="form-label">Perfil</label>
+              <select class="form-select" name="role">
+                <option value="user">Usuário</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Senha</label>
+              <div class="input-group">
+                <input class="form-control js-pass" type="password" name="senha" placeholder="senha inicial" required>
+                <button class="btn btn-outline-secondary js-toggle-pass" type="button" title="Mostrar/ocultar">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="col-md-1 d-flex align-items-end">
+              <button class="btn btn-success btn-fixed w-100" type="submit" title="Criar">
+                <i class="bi bi-check2"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="small text-muted mt-2">
+            Dica: “Login” é o que será usado para entrar. “Nome exibido” é o que aparece no topo.
+          </div>
+        </div>
+      </form>
+
+      <!-- Lista -->
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light">
+            <tr>
+              <th style="min-width:140px;">Login</th>
+              <th style="min-width:240px;">Trocar login</th>
+              <th style="min-width:220px;">Nome exibido</th>
+              <th>Perfil</th>
+              <th>Status</th>
+              <th style="min-width:260px;">Nova senha (opcional)</th>
+              <th class="text-end" style="min-width:220px;">Ações</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for u in usuarios %}
+            {% set form_id = "upd_user_" ~ u[0] %}
+            <tr>
+
+              <!-- Login atual -->
+              <td class="fw-semibold">{{ u[1] }}</td>
+
+              <!-- Trocar login -->
+              <td>
+                <div class="user-login-cell">
+                  <form method="post"
+                        action="/usuarios/alterar-login"
+                        class="d-flex gap-2 m-0 user-login-form"
+                        autocomplete="off"
+                        onsubmit="return confirm('Trocar o login deste usuário?')">
+                    {{ csrf_input()|safe }}
+                    <input type="hidden" name="id" value="{{ u[0] }}">
+
+                    <input class="form-control"
+                          name="novo_username"
+                          placeholder="novo login..."
+                          minlength="3"
+                          maxlength="32"
+                          autocomplete="off">
+
+                    <button class="btn btn-outline-primary btn-fixed" type="submit" title="Trocar login">
+                      <i class="bi bi-arrow-repeat"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+
+              <!-- Nome exibido (inputs apontam para o form da coluna Ações) -->
+              <td>
+                <input class="form-control"
+                       name="nome_exibicao"
+                       value="{{ u[3] }}"
+                       required
+                       form="{{ form_id }}">
+              </td>
+
+              <td>
+                <span class="badge {% if u[2]=='admin' %}text-bg-primary{% else %}text-bg-secondary{% endif %}">
+                  {{ u[2] }}
+                </span>
+              </td>
+
+              <td>
+                {% if u[4] == 1 %}
+                  <span class="badge text-bg-success">ATIVO</span>
+                {% else %}
+                  <span class="badge text-bg-danger">INATIVO</span>
+                {% endif %}
+              </td>
+
+              <!-- Nova senha -->
+              <td>
+                <div class="input-group">
+                  <input class="form-control js-pass"
+                         type="password"
+                         name="senha"
+                         placeholder="deixe vazio para não mudar"
+                         form="{{ form_id }}">
+                  <button class="btn btn-outline-secondary js-toggle-pass" type="button" title="Mostrar/ocultar">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                </div>
+                <div class="form-text">Se preencher, a senha será redefinida.</div>
+              </td>
+
+              <!-- Ações (aqui fica o form completo e válido) -->
+              <td class="text-end">
+
+                <form id="{{ form_id }}" method="post" action="/usuarios/atualizar" class="d-inline" autocomplete="off">
+                  {{ csrf_input()|safe }}
+                  <input type="hidden" name="id" value="{{ u[0] }}">
+                  <button class="btn btn-primary btn-fixed" type="submit" title="Salvar nome/senha">
+                    <i class="bi bi-save"></i> Salvar
+                  </button>
+                </form>
+
+                {% if u[4] == 1 %}
+                  <form method="post" action="/usuarios/desativar/{{ u[0] }}" class="d-inline ms-1">
+                    {{ csrf_input()|safe }}
+                    <button class="btn btn-outline-danger btn-fixed"
+                            type="submit"
+                            onclick="return confirm('Deseja desativar este usuário?')"
+                            title="Desativar">
+                      <i class="bi bi-person-x"></i>
+                    </button>
+                  </form>
+                {% else %}
+                  <form method="post" action="/usuarios/reativar/{{ u[0] }}" class="d-inline ms-1">
+                    {{ csrf_input()|safe }}
+                    <button class="btn btn-outline-success btn-fixed"
+                            type="submit"
+                            onclick="return confirm('Deseja reativar este usuário?')"
+                            title="Reativar">
+                      <i class="bi bi-person-check"></i>
+                    </button>
+                  </form>
+                {% endif %}
+
+              </td>
+
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="small text-muted mt-2">
+        Dica: se você mudar seu próprio “Nome exibido”, o topo do sistema atualiza automaticamente.
+        Se você trocar seu próprio “Login”, você passa a entrar usando o novo login.
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function(){
+  document.querySelectorAll('.js-toggle-pass').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      const wrap = btn.closest('.input-group');
+      if(!wrap) return;
+      const input = wrap.querySelector('.js-pass');
+      if(!input) return;
+
+      const isPass = input.type === 'password';
+      input.type = isPass ? 'text' : 'password';
+      btn.innerHTML = isPass ? '<i class="bi bi-eye-slash"></i>' : '<i class="bi bi-eye"></i>';
+      input.focus();
+    });
+  });
+})();
+</script>
+{% endblock %}

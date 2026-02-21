@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-6">
+    <div class="card">
+      <div class="card-header">
+        <strong><i class="bi bi-key"></i> Alterar senha</strong>
+      </div>
+
+      <div class="card-body">
+        <p class="mb-2">Usuário: <strong>{{ u[1] }}</strong></p>
+        <p class="text-muted small">Perfil: {{ u[2] }}</p>
+
+        {% if erro %}
+          <div class="alert alert-danger">
+            <i class="bi bi-exclamation-triangle"></i> {{ erro }}
+          </div>
+        {% endif %}
+
+        <form method="post" class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Nova senha</label>
+            <input type="password" name="nova_senha" class="form-control" required>
+          </div>
+
+          <div class="col-12 d-flex gap-2">
+            <button class="btn btn-warning">
+              <i class="bi bi-check2-circle"></i> Salvar
+            </button>
+            <a class="btn btn-outline-secondary" href="{{ voltar_url or '/usuarios' }}">Voltar</a>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

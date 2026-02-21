@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card shadow-sm mb-3">
+  <div class="card-body d-flex flex-wrap justify-content-between align-items-start gap-2">
+    <div>
+      <h4 class="mb-1"><i class="bi bi-eye"></i> Detalhe — {{ mes }}</h4>
+      <div class="text-muted small">Entregas do mês para este cadastrado.</div>
+    </div>
+    <a class="btn btn-outline-secondary btn-fixed" href="/resumo?mes={{ mes }}">
+      <i class="bi bi-arrow-left"></i> Voltar
+    </a>
+  </div>
+</div>
+
+{% set gas = (totais.get('gasolina', 0) or 0) %}
+{% set die = (totais.get('diesel', 0) or 0) %}
+{% set total_mes = (gas + die) %}
+{% set cota = (pessoa[4] or 0) %}
+
+<div class="row g-3">
+  <div class="col-12 col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-header header-soft d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+          <span class="header-icon"><i class="bi bi-person"></i></span>
+          <strong>Dados</strong>
+        </div>
+        <span class="badge text-bg-secondary">Cadastro</span>
+      </div>
+
+      <div class="card-body">
+        <div class="mb-2"><span class="text-muted">Nome:</span> <strong>{{ pessoa[1] }}</strong></div>
+        <div class="mb-2"><span class="text-muted">Categoria:</span> <strong>{{ pessoa[2] }}</strong></div>
+        <div class="mb-2"><span class="text-muted">Equipe:</span>
+          <strong>
+            {% if pessoa[3] %}{{ pessoa[3] }}{% else %}<span class="text-muted">(Sem equipe)</span>{% endif %}
+          </strong>
+        </div>
+
+        <div class="mb-2 d-flex align-items-center justify-content-between">
+          <span class="text-muted">Cota:</span>
+          <span class="badge text-bg-secondary badge-litros">{{ cota | int }}L</span>
+        </div>
+
+        <div class="mb-2 d-flex align-items-center justify-content-between">
+          <span class="text-muted">Total mês:</span>
+          <span class="badge text-bg-dark badge-litros">{{ total_mes | int }}L</span>
+        </div>
+
+        {% if cota > 0 %}
+          {% set saldo = (cota - total_mes) %}
+          <div class="mb-2 d-flex align-items-center justify-content-between">
+            <span class="text-muted">Saldo vs cota:</span>
+            {% if saldo >= 0 %}
+              <span class="badge text-bg-success badge-litros">{{ saldo | int }}L</span>
+            {% else %}
+              <span class="badge text-bg-danger badge-litros">{{ saldo | int }}L</span>
+            {% endif %}
+          </div>
+        {% endif %}
+
+        <hr>
+
+        <div class="d-flex flex-wrap gap-2">
+          <span class="badge text-bg-success badge-litros">
+            <i class="bi bi-droplet"></i> Gasolina: {{ gas | int }}L
+          </span>
+          <span class="badge text-bg-warning badge-litros">
+            <i class="bi bi-droplet-half"></i> Diesel: {{ die | int }}L
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-12 col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-header header-soft-warning d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+          <span class="header-icon"><i class="bi bi-list-ul"></i></span>
+          <strong>Entregas do mês</strong>
+        </div>
+        <span class="badge text-bg-secondary">Registros: {{ entregas|length }}</span>
+      </div>
+
+      <div class="card-body">
+        {% if entregas|length == 0 %}
+          <div class="empty-state">
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <i class="bi bi-inboxes fs-5"></i>
+              <strong>Nenhuma entrega neste mês</strong>
+            </div>
+            <div class="text-muted small">
+              Volte ao resumo ou registre uma entrega em <strong>Entregas</strong>.
+            </div>
+          </div>
+        {% else %}
+          <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Data</th>
+                  <th>Quantidade</th>
+                  <th>Combustível</th>
+                  <th>Observação</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for e in entregas %}
+                <tr>
+                  <td>{{ e[1] | data_br }}</td>
+                  <td><span class="badge text-bg-secondary badge-litros">{{ e[2] | int }}L</span></td>
+                  <td>{{ e[3] }}</td>
+                  <td class="text-truncate" style="max-width: 260px;" title="{{ e[4] or '' }}">{{ e[4] }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="text-muted small mt-2">
+            Dica: clique em uma linha para destacar.
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

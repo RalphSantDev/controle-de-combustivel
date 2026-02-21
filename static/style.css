@@ -1,0 +1,1219 @@
+/* =========================================================
+   ULTRA PREMIUM UI v2 — CONTROLE DE COMBUSTIVEL
+   - Light + Dark premium (obra de arte)
+   - Cards / Menu / Buttons com microinteracoes
+   - Zero texto apagado, zero hover branco
+   - Bootstrap-friendly, sem briga de classes
+========================================================= */
+
+/* ---------------------------------------------------------
+   0) BASE / RESET LEVE / PERFORMANCE
+--------------------------------------------------------- */
+:root{ color-scheme: light; }
+body.dark{ color-scheme: dark; }
+
+*,
+*::before,
+*::after{ box-sizing: border-box; }
+
+html, body{ height: 100%; }
+
+body{
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+a, button, .btn, i, .bi, .nav-link, .badge{ opacity: 1 !important; }
+i, .bi{ color: currentColor !important; }
+
+:focus{ outline: none; }
+
+/* Acessibilidade */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------
+   1) TOKENS (DESIGN SYSTEM)
+--------------------------------------------------------- */
+:root{
+  /* shape */
+  --r-sm: 12px;
+  --r: 16px;
+  --r-lg: 18px;
+  --r-xl: 22px;
+
+  /* typography */
+  --font-scale: 1;
+
+  /* motion */
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --ease-soft: cubic-bezier(.2, .8, .2, 1);
+  --t-fast: 120ms;
+  --t: 180ms;
+  --t-slow: 320ms;
+  --t-cine: 520ms;
+
+  /* light */
+  --bg: #f6f8fc;
+  --bg2:#eef3ff;
+  --surface: rgba(255,255,255,.86);
+  --surface-strong: rgba(255,255,255,.96);
+  --surface-2: rgba(255,255,255,.68);
+
+  --text: #0f172a;
+  --muted:#475569;
+
+  --border: rgba(15,23,42,.10);
+  --border-2: rgba(15,23,42,.16);
+
+  --primary:#2563eb;
+  --primary2:#1d4ed8;
+
+  --ring: 0 0 0 .22rem rgba(37,99,235,.20);
+
+  /* depth */
+  --shadow-1: 0 10px 22px rgba(2,6,23,.10);
+  --shadow-2: 0 18px 48px rgba(2,6,23,.14);
+  --shadow-3: 0 26px 70px rgba(2,6,23,.18);
+
+  /* glow */
+  --glow-a: rgba(37,99,235,.18);
+  --glow-b: rgba(37,99,235,.08);
+  --hover-tint: rgba(37,99,235,.06);
+
+  /* subtle noise (illusion de qualidade) */
+  --noise: radial-gradient(circle at 30% 0%, rgba(255,255,255,.08), transparent 55%);
+}
+
+/* dark */
+body.dark{
+  --bg:#0b1220;
+  --bg2:#0f1a33;
+
+  --surface: rgba(15,23,42,.78);
+  --surface-strong: rgba(15,23,42,.92);
+  --surface-2: rgba(255,255,255,.06);
+
+  --text: rgba(245,248,255,.96);
+  --muted: rgba(234,242,255,.74);
+
+  --border: rgba(231,237,247,.10);
+  --border-2: rgba(231,237,247,.16);
+
+  --ring: 0 0 0 .22rem rgba(37,99,235,.28);
+
+  --shadow-1: 0 14px 34px rgba(0,0,0,.38);
+  --shadow-2: 0 24px 64px rgba(0,0,0,.52);
+  --shadow-3: 0 34px 90px rgba(0,0,0,.62);
+
+  --glow-a: rgba(37,99,235,.22);
+  --glow-b: rgba(37,99,235,.10);
+  --hover-tint: rgba(37,99,235,.12);
+
+  --noise: radial-gradient(circle at 30% 0%, rgba(255,255,255,.04), transparent 55%);
+}
+
+/* ---------------------------------------------------------
+   2) BACKGROUND (CINEMATIC, SEM PESAR)
+--------------------------------------------------------- */
+body{
+  background:
+    radial-gradient(1200px 720px at 18% -12%, rgba(37,99,235,.14), transparent 60%),
+    radial-gradient(900px 620px at 90% -14%, rgba(29,78,216,.12), transparent 58%),
+    linear-gradient(180deg, var(--bg2), var(--bg));
+  color: var(--text);
+}
+
+/* wrapper */
+.page-wrap{ min-height: calc(100vh - 56px - 56px); }
+
+/* muted sempre forte */
+.text-muted, .small.text-muted, .form-text{
+  color: var(--muted) !important;
+  opacity: 1 !important;
+}
+
+/* ---------------------------------------------------------
+   3) NAVBAR (VIDRO PREMIUM)
+--------------------------------------------------------- */
+.navbar, .navbar-pro{
+  border-bottom: 1px solid var(--border) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  position: relative;
+}
+
+/* camada de brilho (sem branco estourado) */
+.navbar::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.9;
+  background:
+    radial-gradient(900px 240px at 10% 0%, var(--glow-b), transparent 60%),
+    radial-gradient(800px 220px at 90% 0%, rgba(255,255,255,.10), transparent 60%);
+  mix-blend-mode: normal;
+}
+
+body:not(.dark) .navbar,
+body:not(.dark) .navbar-pro{
+  background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,.70)) !important;
+}
+
+body.dark .navbar,
+body.dark .navbar-pro,
+.navbar.bg-dark,
+.navbar[data-bs-theme="dark"],
+.navbar-dark{
+  background: linear-gradient(180deg, rgba(9,16,29,.96), rgba(9,16,29,.90)) !important;
+  border-bottom: 1px solid rgba(255,255,255,.08) !important;
+}
+
+body:not(.dark) .navbar *{ color: rgba(15,23,42,.92) !important; }
+body.dark .navbar *{ color: rgba(255,255,255,.92) !important; }
+
+.navbar .nav-link{
+  transition: transform var(--t) var(--ease-out), opacity var(--t) var(--ease-soft) !important;
+}
+.navbar .nav-link:hover{ transform: translateY(-1px); opacity: 1 !important; }
+
+.brand-badge{
+  width:34px;height:34px;border-radius:12px;
+  display:inline-flex;align-items:center;justify-content:center;
+  background: rgba(37,99,235,.16);
+  border: 1px solid rgba(37,99,235,.28);
+  box-shadow: 0 10px 22px rgba(37,99,235,.12);
+}
+
+/* ---------------------------------------------------------
+   4) CARDS (DEPTH REAL + AURA AZUL, ZERO BORRAO BRANCO)
+--------------------------------------------------------- */
+.card{
+  border-radius: var(--r-xl);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+  position: relative;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  transform: translate3d(0,0,0);
+  backface-visibility: hidden;
+  will-change: transform, box-shadow, border-color;
+
+  transition:
+    transform var(--t-slow) var(--ease-out),
+    box-shadow var(--t-slow) var(--ease-out),
+    border-color var(--t) var(--ease-soft),
+    background-color var(--t) var(--ease-soft) !important;
+}
+
+/* brilho interno azul + noise (sem branco forte) */
+.card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:.0;
+  background:
+    radial-gradient(900px 240px at 12% 0%, var(--glow-b), transparent 62%),
+    radial-gradient(700px 260px at 92% 10%, rgba(255,255,255,.10), transparent 62%),
+    var(--noise);
+  transition: opacity var(--t) var(--ease-soft) !important;
+}
+
+/* accent lateral */
+.card::before{
+  content:"";
+  position:absolute;
+  left:-2px; top:14px; bottom:14px; width:3px;
+  border-radius:999px;
+  opacity:0;
+  background: linear-gradient(to bottom,
+    rgba(37,99,235,0) 0%,
+    rgba(37,99,235,.95) 45%,
+    rgba(37,99,235,.95) 90%,
+    rgba(37,99,235,0) 100%);
+  box-shadow: -10px 0 18px rgba(37,99,235,.22);
+  transition: opacity var(--t) var(--ease-soft) !important;
+}
+
+.card:hover{
+  transform: translate3d(0,-6px,0);
+  box-shadow: var(--shadow-3);
+  border-color: rgba(37,99,235,.26);
+}
+.card:hover::before{ opacity: .96; }
+.card:hover::after{ opacity: 1; }
+
+.card:active{ transform: translate3d(0,-2px,0) scale(.992); }
+
+@media (max-width: 768px){
+  .card:hover{ transform:none; }
+  .card:active{ transform: scale(.995); }
+}
+
+/* card header */
+.card-header{
+  border-bottom: 1px solid var(--border);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
+}
+body:not(.dark) .card-header{
+  background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.76));
+}
+body.dark .card-header{
+  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+}
+
+/* ---------------------------------------------------------
+   5) BUTTONS (NADA “LAVADO” / NADA “BRANCO” NO DARK)
+--------------------------------------------------------- */
+.btn{
+  border-radius: 12px;
+  transform: translate3d(0,0,0);
+  will-change: transform, box-shadow;
+  transition:
+    transform var(--t) var(--ease-out),
+    box-shadow var(--t) var(--ease-out),
+    border-color var(--t-fast) var(--ease-soft),
+    background-color var(--t-fast) var(--ease-soft),
+    color var(--t-fast) var(--ease-soft) !important;
+}
+.btn:hover{ transform: translateY(-1px); }
+.btn:active{ transform: translateY(0) scale(.99); }
+
+.btn-fixed{
+  height: 38px;
+  display: inline-flex; align-items:center; justify-content:center; gap: .45rem;
+}
+
+/* Outline buttons no dark: segura o hover */
+body.dark .btn-outline-secondary,
+body.dark .btn-outline-light,
+body.dark .btn-light{
+  background: rgba(255,255,255,.06) !important;
+  border-color: rgba(255,255,255,.16) !important;
+  color: rgba(241,245,255,.94) !important;
+}
+body.dark .btn-outline-secondary:hover,
+body.dark .btn-outline-light:hover,
+body.dark .btn-light:hover{
+  background: rgba(255,255,255,.10) !important;
+  border-color: rgba(255,255,255,.26) !important;
+  color: rgba(255,255,255,.98) !important;
+}
+
+/* ---------------------------------------------------------
+   6) INPUTS (SILK)
+--------------------------------------------------------- */
+.form-control, .form-select{
+  border-radius: 14px;
+  border-color: var(--border-2);
+  transition:
+    transform var(--t) var(--ease-out),
+    box-shadow var(--t) var(--ease-out),
+    border-color var(--t-fast) var(--ease-soft),
+    background-color var(--t-fast) var(--ease-soft),
+    color var(--t-fast) var(--ease-soft) !important;
+}
+
+body:not(.dark) .form-control,
+body:not(.dark) .form-select{
+  background: rgba(255,255,255,.90);
+  color: rgba(15,23,42,.94);
+}
+
+body.dark .form-control,
+body.dark .form-select{
+  background: rgba(31,36,48,.92) !important;
+  color: rgba(245,248,255,.96) !important;
+  border-color: rgba(255,255,255,.14) !important;
+}
+body.dark .form-control::placeholder{ color: rgba(234,242,255,.52) !important; }
+
+.form-control:focus, .form-select:focus{
+  box-shadow: var(--ring) !important;
+  border-color: rgba(37,99,235,.40) !important;
+  transform: translateY(-1px);
+}
+
+/* input-group no dark */
+body.dark .input-group-text{
+  background: rgba(255,255,255,.07) !important;
+  border-color: rgba(255,255,255,.14) !important;
+  color: rgba(245,248,255,.94) !important;
+}
+
+/* ---------------------------------------------------------
+   7) TABLES (CLEAN + LUXURY)
+--------------------------------------------------------- */
+.table{ vertical-align: middle; }
+.table thead th{ font-weight: 900; letter-spacing: .2px; }
+.table-hover tbody tr{
+  transition: background-color var(--t) var(--ease-soft), transform var(--t) var(--ease-out) !important;
+}
+.table-hover tbody tr:hover{
+  background-color: var(--hover-tint);
+  transform: translateX(2px);
+}
+
+body.dark .table{
+  color: rgba(241,245,255,.94) !important;
+  --bs-table-bg: transparent;
+  --bs-table-striped-bg: rgba(255,255,255,.03);
+  --bs-table-hover-bg: rgba(37,99,235,.12);
+  border-color: var(--border) !important;
+}
+body.dark .table thead th{
+  background-color: rgba(255,255,255,.06) !important;
+  color: rgba(245,248,255,.98) !important;
+}
+body.dark .table td, body.dark .table th{ border-color: var(--border) !important; }
+
+/* ---------------------------------------------------------
+   8) OFFCANVAS MENU (CINEMATIC)
+--------------------------------------------------------- */
+.offcanvas{
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+body:not(.dark) .offcanvas{
+  background: rgba(255,255,255,.94) !important;
+  color: rgba(15,23,42,.94) !important;
+}
+body.dark .offcanvas{
+  background: rgba(12,18,32,.94) !important;
+  color: rgba(245,248,255,.96) !important;
+}
+
+.offcanvas .offcanvas-header{
+  border-bottom: 1px solid rgba(0,0,0,.08);
+}
+body.dark .offcanvas .offcanvas-header{
+  border-bottom: 1px solid rgba(255,255,255,.10);
+}
+
+.offcanvas .text-uppercase{
+  letter-spacing: .12em;
+  font-size: .72rem;
+  font-weight: 900;
+}
+body:not(.dark) .offcanvas .text-uppercase{ color: rgba(15,23,42,.58) !important; }
+body.dark .offcanvas .text-uppercase{ color: rgba(234,242,255,.62) !important; }
+
+.offcanvas .list-group{ gap: 10px; }
+.offcanvas .list-group-item{
+  border-radius: 16px !important;
+  padding: 12px 14px;
+  display:flex; align-items:center; gap:.65rem;
+
+  background: rgba(255,255,255,.72) !important;
+  border: 1px solid rgba(0,0,0,.10) !important;
+  color: rgba(15,23,42,.94) !important;
+  box-shadow: 0 10px 22px rgba(2,6,23,.10);
+
+  transform: translate3d(0,0,0);
+  will-change: transform, box-shadow, border-color;
+
+  transition:
+    transform var(--t) var(--ease-out),
+    box-shadow var(--t) var(--ease-out),
+    border-color var(--t-fast) var(--ease-soft),
+    background-color var(--t-fast) var(--ease-soft),
+    color var(--t-fast) var(--ease-soft) !important;
+}
+
+.offcanvas .list-group-item i{
+  font-size: 1.05rem;
+  opacity: 1 !important;
+  transition: transform var(--t) var(--ease-out) !important;
+}
+
+.offcanvas .list-group-item:hover{
+  transform: translate3d(8px,0,0);
+  box-shadow: 0 18px 44px rgba(2,6,23,.16);
+  border-color: rgba(37,99,235,.26) !important;
+}
+.offcanvas .list-group-item:hover i{ transform: translate3d(2px,0,0); }
+
+.offcanvas .list-group-item.active{
+  background: linear-gradient(135deg, rgba(37,99,235,.20), rgba(37,99,235,.08)) !important;
+  border-color: rgba(37,99,235,.46) !important;
+  color: rgba(15,23,42,.98) !important;
+  box-shadow: 0 22px 56px rgba(37,99,235,.16), 0 16px 32px rgba(2,6,23,.12);
+}
+
+/* dark menu items */
+body.dark .offcanvas .list-group-item{
+  background: rgba(255,255,255,.04) !important;
+  border-color: rgba(255,255,255,.10) !important;
+  color: rgba(245,248,255,.96) !important;
+  box-shadow: 0 14px 30px rgba(0,0,0,.26);
+}
+body.dark .offcanvas .list-group-item:hover{
+  background: rgba(255,255,255,.08) !important;
+  border-color: rgba(255,255,255,.20) !important;
+  box-shadow: 0 22px 56px rgba(0,0,0,.36);
+}
+body.dark .offcanvas .list-group-item.active{
+  background: linear-gradient(135deg, rgba(37,99,235,.44), rgba(37,99,235,.14)) !important;
+  border-color: rgba(37,99,235,.62) !important;
+  color: rgba(255,255,255,.98) !important;
+  box-shadow: 0 30px 74px rgba(37,99,235,.14), 0 18px 40px rgba(0,0,0,.40);
+}
+
+@media (max-width: 768px){
+  .offcanvas .list-group-item:hover{ transform: translate3d(4px,0,0); }
+}
+
+/* ---------------------------------------------------------
+   9) ALERTS / EMPTY / PROGRESS
+--------------------------------------------------------- */
+.alert{ border-radius: 14px; border: 1px solid var(--border-2); }
+
+.empty-state{
+  border: 1px dashed rgba(15,23,42,.22);
+  border-radius: var(--r-xl);
+  padding: 18px;
+  background: rgba(255,255,255,.65);
+}
+body.dark .empty-state{
+  border-color: rgba(231,237,247,.14);
+  background: rgba(255,255,255,.04);
+}
+
+.progress-soft{
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.06);
+  overflow: hidden;
+}
+body.dark .progress-soft{ background: rgba(255,255,255,.06); }
+
+/* ---------------------------------------------------------
+   10) MODAL (POLIDO)
+--------------------------------------------------------- */
+.modal-backdrop.show{
+  opacity: .70;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.modal.fade .modal-dialog{
+  transform: translateY(18px) scale(.985);
+  opacity: 0;
+}
+.modal.show .modal-dialog{
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+body.dark .modal-content{
+  background: rgba(12,18,32,.96);
+  color: rgba(245,248,255,.96);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 16px;
+}
+body.dark .modal-header,
+body.dark .modal-footer{
+  border-color: rgba(255,255,255,.10) !important;
+}
+body.dark .btn-close{ filter: invert(1); }
+
+/* ---------------------------------------------------------
+   11) CONTRASTE FINAL (ANTI “APAGADO”)
+--------------------------------------------------------- */
+body.dark .card,
+body.dark .card *{ color: rgba(245,248,255,.96); }
+
+body.dark h1,body.dark h2,body.dark h3,body.dark h4,body.dark h5,body.dark h6,
+body.dark .card-title{ color: rgba(248,250,255,.98) !important; }
+
+body.dark label,
+body.dark .form-label{ color: rgba(245,248,255,.92) !important; }
+
+body.dark .text-muted,
+body.dark .small.text-muted,
+body.dark .form-text{ color: rgba(234,242,255,.74) !important; opacity: 1 !important; }
+
+/* ---------------------------------------------------------
+   12) FLATPICKR (DARK)
+--------------------------------------------------------- */
+body.dark .flatpickr-calendar{
+  background: rgba(8, 14, 26, .98) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  border-radius: 18px !important;
+  box-shadow: 0 24px 70px rgba(0,0,0,.55) !important;
+}
+body.dark .flatpickr-months,
+body.dark .flatpickr-weekdays{
+  background: rgba(10, 18, 34, .98) !important;
+}
+body.dark .flatpickr-day,
+body.dark .flatpickr-weekday,
+body.dark .flatpickr-current-month,
+body.dark .flatpickr-current-month input.cur-year{
+  color: rgba(234,242,255,.94) !important;
+}
+body.dark .flatpickr-day:hover{ background: rgba(37,99,235,.16) !important; }
+body.dark .flatpickr-day.selected,
+body.dark .flatpickr-day.startRange,
+body.dark .flatpickr-day.endRange{
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+  color: #fff !important;
+}
+
+/* MonthSelect */
+body.dark .flatpickr-monthSelect-month{
+  background: rgba(255,255,255,.04) !important;
+  border: 1px solid rgba(255,255,255,.08) !important;
+  color: rgba(234,242,255,.94) !important;
+  border-radius: 14px !important;
+}
+body.dark .flatpickr-monthSelect-month:hover{ background: rgba(37,99,235,.16) !important; }
+body.dark .flatpickr-monthSelect-month.selected{
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+  color: #fff !important;
+}
+
+/* =========================================================
+   HOTFIX PRECISO — sem mexer no resto
+   1) Remove brilho branco do hover (mantém a luz azul)
+   2) Remove "pulo" no clique (mantém hover fluido)
+   3) Card-header maior + sem barra branca em cima
+========================================================= */
+
+/* 1) TIRA o brilho branco do hover (fica só aura azul + noise) */
+.card::after{
+  background:
+    radial-gradient(900px 240px at 12% 0%, var(--glow-b), transparent 62%),
+    var(--noise) !important;
+}
+
+/* Se ainda houver branco por causa do light, força a versão "sem branco" também */
+body:not(.dark) .card::after{
+  background:
+    radial-gradient(900px 240px at 12% 0%, var(--glow-b), transparent 62%),
+    var(--noise) !important;
+}
+
+/* 2) REMOVE o "pulo" no clique:
+   - não deixa o card mudar transform ao pressionar
+   - mantém o hover (se estiver hover, fica igual) */
+.card:active{
+  transform: translate3d(0,-6px,0) !important; /* igual ao hover -> sem salto */
+}
+/* Mobile (onde hover não aplica): sem pulo também */
+@media (max-width:768px){
+  .card:active{ transform: translate3d(0,0,0) !important; }
+}
+
+/* 3) CARD HEADER: maior e sem “barra branca” no topo */
+.card-header{
+  padding: 16px 18px !important;   /* deixa a faixa de cima mais alta */
+  box-shadow: none !important;      /* remove a linha/brilho branco do topo */
+  border-top: 0 !important;
+}
+
+/* Ajuste do fundo do header para não ficar “esbranquiçado” */
+body:not(.dark) .card-header{
+  background: rgba(255,255,255,.70) !important; /* premium, mas sem faixa branca estourada */
+}
+body.dark .card-header{
+  background: rgba(255,255,255,.05) !important; /* mantém dark premium */
+}
+
+/* Navbar fixa no topo */
+.navbar, .navbar-pro{
+  position: sticky;
+  top: 0;
+  z-index: 1030; /* padrão Bootstrap para navbar */
+}
+
+/* =========================================================
+   FIX FUNDO NO FINAL DA PAGINA (remove divisao)
+========================================================= */
+
+/* garante que o fundo sempre cubra 100% da pagina */
+html, body{
+  min-height: 100%;
+  height: auto;
+  background:
+    radial-gradient(1200px 720px at 18% -12%, rgba(37,99,235,.14), transparent 60%),
+    radial-gradient(900px 620px at 90% -14%, rgba(29,78,216,.12), transparent 58%),
+    linear-gradient(180deg, var(--bg2), var(--bg)) !important;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* evita que um container “corte” o fundo antes do fim */
+.page-wrap{
+  min-height: calc(100vh - 56px) !important;
+}
+
+/* se tiver algum footer ou container com fundo sólido, neutraliza */
+footer, .footer, .container-fluid.footer, .page-footer{
+  background: transparent !important;
+}
+
+/* =========================================================
+   NAVBAR — CAPSULAS PREMIUM (FORÇADO)
+   pega qualquer item clicável do lado direito
+========================================================= */
+
+/* container direito */
+.navbar .ms-auto,
+.navbar .navbar-nav.ms-auto{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* QUALQUER coisa clicável lá dentro */
+.navbar .ms-auto > *,
+.navbar .navbar-nav.ms-auto > *{
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+
+  padding: 7px 12px;
+  border-radius: 10px;
+
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.18);
+
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  color: inherit !important;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+/* LIGHT */
+body:not(.dark) .navbar .ms-auto > *,
+body:not(.dark) .navbar .navbar-nav.ms-auto > *{
+  background: rgba(15,23,42,.04);
+  border-color: rgba(15,23,42,.14);
+  color: rgba(15,23,42,.92) !important;
+}
+
+/* HOVER */
+.navbar .ms-auto > *:hover,
+.navbar .navbar-nav.ms-auto > *:hover{
+  background: rgba(37,99,235,.14);
+  border-color: rgba(37,99,235,.35);
+  transform: translateY(-1px);
+}
+
+/* ACTIVE */
+.navbar .ms-auto > *:active,
+.navbar .navbar-nav.ms-auto > *:active{
+  transform: translateY(0);
+}
+
+/* ícones */
+.navbar .ms-auto i,
+.navbar .navbar-nav.ms-auto i{
+  font-size: 1.05rem;
+  opacity: .95;
+}
+
+/* =========================================================
+   NAVBAR — HAMBURGUER COM CAPSULA (A PROVA DE HTML)
+========================================================= */
+
+/* Pega qualquer coisa que abre offcanvas (Bootstrap) */
+.navbar [data-bs-toggle="offcanvas"],
+.navbar a[href="#offcanvasMenu"],
+.navbar button[aria-controls],
+.navbar .btn-menu,
+.navbar .menu-btn{
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+
+  padding: 0 !important;
+  border-radius: 10px !important;
+
+  background: rgba(255,255,255,.08) !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+/* LIGHT */
+body:not(.dark) .navbar [data-bs-toggle="offcanvas"],
+body:not(.dark) .navbar a[href="#offcanvasMenu"],
+body:not(.dark) .navbar button[aria-controls],
+body:not(.dark) .navbar .btn-menu,
+body:not(.dark) .navbar .menu-btn{
+  background: rgba(15,23,42,.04) !important;
+  border-color: rgba(15,23,42,.14) !important;
+}
+
+/* Hover */
+.navbar [data-bs-toggle="offcanvas"]:hover,
+.navbar a[href="#offcanvasMenu"]:hover,
+.navbar button[aria-controls]:hover,
+.navbar .btn-menu:hover,
+.navbar .menu-btn:hover{
+  background: rgba(37,99,235,.14) !important;
+  border-color: rgba(37,99,235,.35) !important;
+  transform: translateY(-1px);
+}
+
+/* Active */
+.navbar [data-bs-toggle="offcanvas"]:active,
+.navbar a[href="#offcanvasMenu"]:active,
+.navbar button[aria-controls]:active,
+.navbar .btn-menu:active,
+.navbar .menu-btn:active{
+  transform: translateY(0);
+}
+
+/* Garante que o ícone do menu fique central e bonito */
+.navbar [data-bs-toggle="offcanvas"] i,
+.navbar a[href="#offcanvasMenu"] i,
+.navbar button[aria-controls] i,
+.navbar .btn-menu i,
+.navbar .menu-btn i{
+  font-size: 1.15rem;
+  opacity: .95;
+}
+
+/* =========================================================
+   OFFCANVAS — RÁPIDO + DESLIZA + FUNDO BORRADO (SEM MEXER NOS CARDS)
+   Cole no FINAL do style.css
+========================================================= */
+
+/* 1) Somente a entrada/saída do MENU (rápida e fluida) */
+.offcanvas{
+  transition: transform 200ms cubic-bezier(.25,.9,.3,1) !important;
+  will-change: transform;
+}
+
+/* 2) Fundo borrado enquanto o menu está aberto */
+.offcanvas-backdrop.show{
+  opacity: .55 !important;
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  transition: opacity 140ms ease !important;
+}
+
+/* =========================================================
+   DASHBOARD — CSS ESCOPADO (NÃO VAZA PARA OUTRAS PÁGINAS)
+   Requer: <div class="page-dashboard"> ... </div>
+========================================================= */
+
+/* ---------- TÍTULO / SUBTÍTULO (SÓ NO DASH) ---------- */
+.page-dashboard .page-title,
+.page-dashboard .dashboard-title,
+.page-dashboard h1{
+  font-size: 32px !important;
+  font-weight: 900 !important;
+  letter-spacing: .2px;
+  margin-bottom: 2px;
+}
+
+.page-dashboard .page-subtitle,
+.page-dashboard .dashboard-subtitle,
+.page-dashboard .page-title + p{
+  font-size: 15px !important;
+  opacity: .85;
+}
+
+/* ---------- CARDS DE CONSUMO (SÓ NO DASH) ---------- */
+.page-dashboard .dashboard-card,
+.page-dashboard .card-kpi,
+.page-dashboard .card-consumo{
+  padding: 22px 24px;
+}
+
+/* número principal (407L / 50L) — NÃO mexe em strong global */
+.page-dashboard .card .kpi-value,
+.page-dashboard .card .valor,
+.page-dashboard .card .litros{
+  font-size: 42px !important;
+  font-weight: 900 !important;
+  letter-spacing: .5px;
+  line-height: 1.1;
+}
+
+/* unidade (L) — NÃO mexe em small global */
+.page-dashboard .card .kpi-unit,
+.page-dashboard .card span.unit{
+  font-size: 16px !important;
+  font-weight: 700;
+  opacity: .8;
+  margin-left: 4px;
+}
+
+/* nome do combustível — NÃO mexe em h5 global */
+.page-dashboard .card .kpi-label,
+.page-dashboard .card .tipo-combustivel{
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  margin-bottom: 4px;
+}
+
+/* textos secundários (só dentro do dash) */
+.page-dashboard .card .kpi-sub,
+.page-dashboard .card .text-muted{
+  font-size: 14px !important;
+  opacity: .8;
+}
+
+/* porcentagem — NÃO mexe em badge global */
+.page-dashboard .card .percentual{
+  font-size: 16px !important;
+  font-weight: 800;
+}
+
+/* barra de progresso (só no dash) */
+.page-dashboard .progress{
+  height: 12px !important;
+  border-radius: 999px;
+}
+
+/* status "Dentro do limite" (só no dash) */
+.page-dashboard .card .status-ok{
+  font-size: 14px;
+  font-weight: 700;
+  opacity: .9;
+}
+
+/* MOBILE (só no dash) */
+@media (max-width: 768px){
+  .page-dashboard .page-title,
+  .page-dashboard .dashboard-title,
+  .page-dashboard h1{
+    font-size: 26px !important;
+  }
+
+  .page-dashboard .card .kpi-value,
+  .page-dashboard .card .valor,
+  .page-dashboard .card .litros{
+    font-size: 34px !important;
+  }
+}
+
+/* =========================================================
+   DASHBOARD — TOPBAR (TITULO + FILTRO MES EM LINHA)
+========================================================= */
+
+/* 1) Aumenta o título "Dashboard" (no template é h3) */
+.page-dashboard .container-xxl h3{
+  font-size: 34px !important;
+  font-weight: 900 !important;
+  letter-spacing: .2px;
+}
+
+/* 2) Form do filtro: tudo na mesma linha */
+.page-dashboard .dash-filter{
+  display: flex !important;
+  align-items: flex-end !important;
+  gap: 10px !important;
+  flex-wrap: nowrap !important;
+}
+
+/* Grupo do mês: ícone + input lado a lado */
+.page-dashboard .dash-filter__group{
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin: 0 !important;
+}
+
+/* Alturas iguais (input month e botões) */
+.page-dashboard .dash-filter__input.js-month{
+  height: 42px !important;
+  min-width: 140px !important;
+  padding: 0 12px !important;
+  border-radius: 12px !important;
+}
+
+/* ícone do calendário */
+.page-dashboard .dash-filter__icon{
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* botões do topo (só dentro do filtro do dashboard) */
+.page-dashboard .dash-filter .btn{
+  height: 42px !important;
+  border-radius: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* Mobile: permite quebrar sem bagunçar */
+@media (max-width: 768px){
+  .page-dashboard .dash-filter{
+    flex-wrap: wrap !important;
+  }
+  .page-dashboard .dash-filter__group{
+    width: 100% !important;
+  }
+  .page-dashboard .dash-filter__input.js-month{
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+}
+
+/* =========================================================
+   DASHBOARD — ÍCONE (icon-chip) MAIOR E ALINHADO AO TÍTULO
+========================================================= */
+.page-dashboard .icon-chip{
+  width: 29px !important;
+  height: 50px !important;
+  border-radius: 16px !important;
+}
+
+.page-dashboard .icon-chip i,
+.page-dashboard .icon-chip .bi{
+  font-size: 27px !important;
+  opacity: 1 !important;
+}
+
+.page-dashboard .icon-chip + h3{
+  line-height: 1 !important;
+}
+
+/* ==================================================
+   DASHBOARD — ALINHAR ÍCONES DOS HEADERS (SEM TORTO)
+================================================== */
+
+/* garante que o header todo esteja centralizado */
+.page-dashboard .card-header.header-soft{
+  display: flex;                 /* já tem d-flex, mas força caso algum CSS sobrescreva */
+  align-items: center !important; /* centraliza verticalmente tudo */
+}
+
+/* o “quadradinho” do ícone vira um flex container */
+.page-dashboard .header-icon{
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 32px;      /* ajuste se quiser maior */
+  height: 32px;
+  line-height: 1 !important;  /* mata baseline */
+  flex: 0 0 32px;   /* não deixa encolher */
+}
+
+/* o ícone em si */
+.page-dashboard .header-icon i,
+.page-dashboard .header-icon .bi{
+  display: block;          /* evita baseline */
+  line-height: 1 !important;
+  font-size: 18px;         /* ajuste fino */
+  transform: translateY(-.5px); /* micro-ajuste opcional (quase imperceptível) */
+}
+
+/* opcional: dá um espacinho melhor entre ícone e texto */
+.page-dashboard .card-header .d-flex.align-items-center{
+  gap: 10px;
+}
+
+.page-dashboard .header-icon{
+  border-radius: 10px;
+  background: rgba(255,255,255,.08);
+}
+
+/* =========================================================
+   ANTI-BORRADO (prioridade máxima no texto)
+   Cola no FINAL do style.css
+========================================================= */
+
+/* 1) Garante que o texto sempre fica acima de qualquer brilho */
+.card, .table, .table-responsive,
+.navbar, .navbar-pro{
+  position: relative;
+}
+
+.card *,
+.table *,
+.navbar *, .navbar-pro *{
+  position: relative;
+  z-index: 3;
+}
+
+/* 2) Remove QUALQUER filtro/backdrop no texto (causa borrado) */
+.card *,
+.table *,
+.navbar *, .navbar-pro *{
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  text-shadow: none !important;
+}
+
+/* 3) Otimiza renderização das fontes (principalmente no Windows/Chrome) */
+html, body{
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+}
+
+body, .card, .table, .navbar, .navbar-pro{
+  transform: translateZ(0);
+}
+
+/* 4) Se o borrado acontece só no hover da tabela, neutraliza filtro no hover */
+.table-hover tbody tr:hover,
+.table-hover tbody tr:hover > *{
+  filter: none !important;
+}
+
+/* 5) Se tiver overlay do card com blur, força ele ficar atrás sem afetar texto */
+.card::before,
+.card::after{
+  z-index: 1 !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.card > *{
+  z-index: 3 !important;
+}
+
+/* =========================================================
+   PATCH FINAL — CARDS SEM CORES/BRILHO
+   Mantém: movimento + luz lateral
+   Remove: glow de cima, branco, noise, gradientes, blur no texto
+========================================================= */
+
+/* 0) Card base: sem vidro/sem brilho extra */
+.card{
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+
+  /* mantém o fundo normal do tema, mas sem efeitos coloridos */
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow-1) !important;
+
+  /* importante: não mover o card (isso borra o texto) */
+  transform: none !important;
+}
+
+/* 1) Mata COMPLETAMENTE o brilho de cima (o culpado é o ::after) */
+.card::after{
+  content: none !important;
+  display: none !important;
+}
+
+/* 2) Mantém SÓ a luz lateral (já é seu ::before) */
+.card::before{
+  opacity: 0 !important;
+}
+
+/* 3) “Movimento” sem borrar texto:
+      - em vez de translate no card, aumentamos sombra/borda
+      - e mostramos a luz lateral */
+.card:hover{
+  transform: none !important;
+  box-shadow: var(--shadow-3) !important;
+  border-color: rgba(37,99,235,.26) !important;
+}
+
+.card:hover::before{
+  opacity: .96 !important;
+}
+
+/* 4) Remove brilho do header (aquele topo “claro”) */
+.card-header{
+  background: transparent !important;
+  box-shadow: none !important;
+  border-top: 0 !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+/* 5) Se tiver hover “luz vindo de cima” na TABELA, tira também */
+.table-hover tbody tr:hover{
+  background-color: rgba(37,99,235,.08) !important; /* leve (sem brilho branco) */
+  transform: none !important; /* isso também pode deixar texto “soft” */
+}
+
+/* 6) Segurança extra: nada de filtro/blur em texto dentro do card */
+.card, .card *{
+  filter: none !important;
+  text-shadow: none !important;
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+/* =========================================================
+   FIX: Card move sem borrar texto (transform ok, sem blur no elemento)
+========================================================= */
+
+/* 1) NÃO use backdrop-filter no .card (isso é o que borra junto do transform) */
+.card{
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  isolation: isolate; /* ajuda a separar camadas */
+}
+
+/* 2) Se você quer manter o “glass”, aplica no overlay (não no card inteiro) */
+.card::after{
+  /* mantém sua luz/noise, mas SEM blur */
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 3) Texto sempre em camada acima, bem nítido */
+.card-header,
+.card-body,
+.card-footer{
+  position: relative;
+  z-index: 3;
+  transform: translateZ(0); /* força layer do texto */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+/* 4) Seu movimento volta normal (como o menu) */
+.card{
+  transform: translate3d(0,0,0);
+  will-change: transform, box-shadow;
+  backface-visibility: hidden;
+}
+
+.card:hover{
+  transform: translate3d(0,-6px,0);
+}
+
+.card:active{
+  transform: translate3d(0,-2px,0) scale(.992);
+}

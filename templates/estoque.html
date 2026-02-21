@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-xxl">
+
+  <!-- Header -->
+  <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-3">
+    <div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="icon-chip"><i class="bi bi-box-seam"></i></span>
+        <div>
+          <h3 class="mb-0">Estoque</h3>
+          <div class="text-muted">Defina limites mensais e acompanhe o consumo.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+      <a class="btn btn-outline-light btn-fixed" href="/entrega?mes={{ mes }}">
+        <i class="bi bi-truck"></i> Entregas do mês
+      </a>
+      <a class="btn btn-outline-secondary btn-fixed" href="/dashboard?mes={{ mes }}">
+        <i class="bi bi-speedometer2"></i> Dashboard
+      </a>
+    </div>
+  </div>
+
+  <!-- Filtro de mês -->
+  <div class="card shadow-sm mb-3">
+    <div class="card-header header-soft-success d-flex align-items-center">
+      <span class="header-icon"><i class="bi bi-calendar2-week"></i></span>
+      <div>
+        <div class="fw-semibold">Filtrar mês</div>
+        <small class="text-muted">Visualize limites e consumo por período.</small>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <form method="get" class="row g-2 align-items-end" action="/estoque">
+        <div class="col-12 col-md-4">
+          <label class="form-label">Mês</label>
+          <input type="text"
+                 name="mes"
+                 value="{{ mes }}"
+                 class="form-control js-date-month"
+                 placeholder="mm/aaaa"
+                 autocomplete="off">
+        </div>
+
+        <div class="col-12 col-md-auto d-flex gap-2">
+          <button class="btn btn-primary btn-fixed" type="submit">
+            <i class="bi bi-funnel"></i> Filtrar
+          </button>
+          <a class="btn btn-outline-secondary btn-fixed" href="/estoque">
+            <i class="bi bi-x-circle"></i> Mês atual
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Alertas -->
+  {% if alerta_gas %}
+    {% set cls = 'danger' if alerta_gas.tipo == 'vermelho' else 'warning' %}
+    <div class="alert alert-{{ cls }} alert-attention d-flex gap-2 mb-3">
+      <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+      <div>
+        <div class="fw-semibold">{{ alerta_gas.titulo }}</div>
+        <div class="small">{{ alerta_gas.msg }}</div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if alerta_diesel %}
+    {% set cls = 'danger' if alerta_diesel.tipo == 'vermelho' else 'warning' %}
+    <div class="alert alert-{{ cls }} alert-attention d-flex gap-2 mb-3">
+      <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+      <div>
+        <div class="fw-semibold">{{ alerta_diesel.titulo }}</div>
+        <div class="small">{{ alerta_diesel.msg }}</div>
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="row g-3">
+
+    <!-- Definir limites -->
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header header-soft d-flex align-items-center gap-2">
+          <span class="header-icon"><i class="bi bi-sliders2-vertical"></i></span>
+          <div>
+            <div class="fw-semibold">Definir limites</div>
+            <small class="text-muted">Limite mensal por combustível.</small>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <form method="post" action="/estoque" class="row g-2" autocomplete="off">
+            {{ csrf_input()|safe }}
+
+            <div class="col-12">
+              <label class="form-label">Mês</label>
+              <input type="text"
+                     name="mes"
+                     value="{{ mes }}"
+                     class="form-control js-date-month"
+                     autocomplete="off"
+                     required>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">Limite Gasolina (L)</label>
+              <input type="number"
+                     step="0.01"
+                     min="0"
+                     name="limite_gasolina"
+                     class="form-control"
+                     value="{{ limite_gas or 0 }}">
+              <div class="form-text">Use 0 para “sem limite”.</div>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">Limite Diesel (L)</label>
+              <input type="number"
+                     step="0.01"
+                     min="0"
+                     name="limite_diesel"
+                     class="form-control"
+                     value="{{ limite_diesel or 0 }}">
+              <div class="form-text">Use 0 para “sem limite”.</div>
+            </div>
+
+            <div class="col-12">
+              <button class="btn btn-success btn-fixed w-100" type="submit">
+                <i class="bi bi-check2-circle"></i> Salvar limites
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resumo -->
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header header-soft-warning d-flex align-items-center gap-2">
+          <span class="header-icon"><i class="bi bi-graph-up-arrow"></i></span>
+          <div>
+            <div class="fw-semibold">Resumo do estoque</div>
+            <small class="text-muted">Consumo e saldo do mês.</small>
+          </div>
+        </div>
+
+        <div class="card-body">
+
+          <div class="row g-3">
+
+            <!-- Gasolina -->
+            <div class="col-12 col-md-6">
+              <div class="kpi-label"><i class="bi bi-droplet-half me-2"></i>Gasolina</div>
+              <div class="kpi-value">{{ usado_gas|int }}<span class="kpi-unit">L</span></div>
+              <div class="kpi-sub text-muted">
+                Limite: {{ limite_gas|int }}L • Saldo: {{ saldo_gas|int }}L
+              </div>
+
+              {% if limite_gas|int > 0 %}
+                {% set pct = (usado_gas / limite_gas * 100) %}
+                {% set w = 100 if pct > 100 else pct %}
+                <div class="progress mt-3 progress-soft">
+                  <div class="progress-bar js-progress" data-pct="{{ w|int }}"></div>
+                </div>
+                <div class="small text-muted mt-2">
+                  {{ pct|round(0)|int }}% do limite
+                </div>
+              {% else %}
+                <div class="mt-3 small text-muted">Sem limite definido.</div>
+              {% endif %}
+            </div>
+
+            <!-- Diesel -->
+            <div class="col-12 col-md-6">
+              <div class="kpi-label"><i class="bi bi-fuel-pump-diesel me-2"></i>Diesel</div>
+              <div class="kpi-value">{{ usado_diesel|int }}<span class="kpi-unit">L</span></div>
+              <div class="kpi-sub text-muted">
+                Limite: {{ limite_diesel|int }}L • Saldo: {{ saldo_diesel|int }}L
+              </div>
+
+              {% if limite_diesel|int > 0 %}
+                {% set pct = (usado_diesel / limite_diesel * 100) %}
+                {% set w = 100 if pct > 100 else pct %}
+                <div class="progress mt-3 progress-soft">
+                  <div class="progress-bar js-progress" data-pct="{{ w|int }}"></div>
+                </div>
+                <div class="small text-muted mt-2">
+                  {{ pct|round(0)|int }}% do limite
+                </div>
+              {% else %}
+                <div class="mt-3 small text-muted">Sem limite definido.</div>
+              {% endif %}
+            </div>
+
+          </div>
+
+          <div class="text-muted small mt-3">
+            Dica: defina limites para receber alertas automáticos.
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  document.querySelectorAll('.js-progress').forEach(function(el){
+    var pct = parseInt(el.getAttribute('data-pct') || '0', 10);
+    pct = Math.max(0, Math.min(100, pct));
+    el.style.width = pct + '%';
+
+    el.classList.remove('bg-success','bg-warning','bg-danger');
+    if (pct >= 100) el.classList.add('bg-danger');
+    else if (pct >= 80) el.classList.add('bg-warning');
+    else el.classList.add('bg-success');
+  });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-xxl">
+
+  <!-- Header -->
+  <div class="card shadow-sm mb-3">
+    <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <span class="icon-chip"><i class="bi bi-list-check"></i></span>
+          <h4 class="mb-0">Listas</h4>
+        </div>
+        <div class="text-muted small">
+          Gerencie categorias e equipes utilizadas no cadastro e filtros.
+        </div>
+      </div>
+
+      <a class="btn btn-outline-secondary btn-fixed" href="/cadastro">
+        <i class="bi bi-arrow-left"></i> Voltar ao cadastro
+      </a>
+    </div>
+  </div>
+
+  <div class="row g-3">
+
+    <!-- CATEGORIAS -->
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header header-soft d-flex align-items-center gap-2">
+          <span class="header-icon"><i class="bi bi-tags"></i></span>
+          <div>
+            <div class="fw-semibold">Categorias</div>
+            <small class="text-muted">Ex: ACS, ENDEMIAS, HOSPITAL…</small>
+          </div>
+        </div>
+
+        <div class="card-body">
+
+          <form method="post" action="/listas" class="row g-2 align-items-end" autocomplete="off">
+            {{ csrf_input()|safe }}
+            <input type="hidden" name="tipo" value="categoria">
+
+            <div class="col-12 col-md-8">
+              <label class="form-label">Nova categoria</label>
+              <input type="text"
+                     name="nome"
+                     class="form-control"
+                     placeholder="Ex: ACS"
+                     required>
+            </div>
+
+            <div class="col-12 col-md-4 d-grid">
+              <button class="btn btn-primary btn-fixed" type="submit">
+                <i class="bi bi-plus-circle"></i> Adicionar
+              </button>
+            </div>
+          </form>
+
+          <hr class="my-3">
+
+          {% if categorias|length == 0 %}
+            <div class="empty-state">
+              <div class="fw-semibold mb-1">Nenhuma categoria cadastrada</div>
+              <div class="text-muted small">
+                Adicione uma categoria acima para começar.
+              </div>
+            </div>
+          {% else %}
+            <div class="table-responsive">
+              <table class="table table-striped table-hover align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Categoria</th>
+                    <th class="text-end">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for c in categorias %}
+                  <tr>
+                    <td class="fw-semibold">{{ c }}</td>
+                    <td class="text-end">
+                      <form method="post"
+                            action="/listas/apagar/categoria/{{ c|urlencode }}"
+                            class="d-inline m-0">
+                        {{ csrf_input()|safe }}
+                        <button type="submit"
+                                class="btn btn-sm btn-outline-danger btn-fixed"
+                                onclick="return confirm('Deseja realmente apagar a categoria “{{ c }}”?')">
+                          <i class="bi bi-trash"></i> Apagar
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+
+    <!-- EQUIPES -->
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-header header-soft-success d-flex align-items-center gap-2">
+          <span class="header-icon"><i class="bi bi-people"></i></span>
+          <div>
+            <div class="fw-semibold">Equipes</div>
+            <small class="text-muted">Ex: UBS MONTE SINAI, VIGILÂNCIA…</small>
+          </div>
+        </div>
+
+        <div class="card-body">
+
+          <form method="post" action="/listas" class="row g-2 align-items-end" autocomplete="off">
+            {{ csrf_input()|safe }}
+            <input type="hidden" name="tipo" value="equipe">
+
+            <div class="col-12 col-md-8">
+              <label class="form-label">Nova equipe</label>
+              <input type="text"
+                     name="nome"
+                     class="form-control"
+                     placeholder="Ex: UBS MONTE SINAI"
+                     required>
+            </div>
+
+            <div class="col-12 col-md-4 d-grid">
+              <button class="btn btn-primary btn-fixed" type="submit">
+                <i class="bi bi-plus-circle"></i> Adicionar
+              </button>
+            </div>
+          </form>
+
+          <hr class="my-3">
+
+          {% if equipes|length == 0 %}
+            <div class="empty-state">
+              <div class="fw-semibold mb-1">Nenhuma equipe cadastrada</div>
+              <div class="text-muted small">
+                Adicione uma equipe acima para começar.
+              </div>
+            </div>
+          {% else %}
+            <div class="table-responsive">
+              <table class="table table-striped table-hover align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Equipe</th>
+                    <th class="text-end">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for e in equipes %}
+                  <tr>
+                    <td class="fw-semibold">{{ e }}</td>
+                    <td class="text-end">
+                      <form method="post"
+                            action="/listas/apagar/equipe/{{ e|urlencode }}"
+                            class="d-inline m-0">
+                        {{ csrf_input()|safe }}
+                        <button type="submit"
+                                class="btn btn-sm btn-outline-danger btn-fixed"
+                                onclick="return confirm('Deseja realmente apagar a equipe “{{ e }}”?')">
+                          <i class="bi bi-trash"></i> Apagar
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}

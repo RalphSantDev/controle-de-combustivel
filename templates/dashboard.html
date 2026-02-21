@@ -1,0 +1,447 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-dashboard">
+  <div class="container-xxl">
+
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-3">
+      <div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="icon-chip"><i class="bi bi-speedometer2"></i></span>
+          <div>
+            <h3 class="mb-0">Dashboard</h3>
+            <div class="text-muted">Resumo do mês selecionado e visão rápida do consumo.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTRO MÊS (VOLTA A ABRIR O CALENDÁRIO) -->
+      <form class="dash-filter" method="get" action="/dashboard">
+        <div class="dash-filter__group">
+          <span class="dash-filter__icon"><i class="bi bi-calendar3"></i></span>
+
+          <!-- IMPORTANTE: type="month" para abrir seletor -->
+          <input
+            type="month"
+            class="dash-filter__input js-month"
+            name="mes"
+            value="{{ mes }}"
+            placeholder="Mês / Ano"
+            autocomplete="off"
+          >
+        </div>
+
+        <button class="btn btn-primary btn-fixed dash-filter__btn" type="submit">
+          <i class="bi bi-funnel"></i><span class="d-none d-sm-inline"> Atualizar</span>
+        </button>
+
+        <a class="btn btn-outline-secondary btn-fixed dash-filter__btn" href="/dashboard">
+          <i class="bi bi-x-circle"></i><span class="d-none d-sm-inline"> Mês atual</span>
+        </a>
+      </form>
+
+    </div>
+
+    <!-- ALERTAS -->
+    {% if alerta_gas or alerta_diesel %}
+    <div class="row g-3 mb-3">
+      {% if alerta_gas %}
+        {% set cls_gas = 'danger' if alerta_gas.tipo == 'vermelho' else 'warning' %}
+        <div class="col-12">
+          <div class="alert alert-{{ cls_gas }} alert-attention d-flex align-items-start gap-2">
+            <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+            <div>
+              <div class="fw-semibold">{{ alerta_gas.titulo }}</div>
+              <div class="small">{{ alerta_gas.msg }}</div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      {% if alerta_diesel %}
+        {% set cls_diesel = 'danger' if alerta_diesel.tipo == 'vermelho' else 'warning' %}
+        <div class="col-12">
+          <div class="alert alert-{{ cls_diesel }} alert-attention d-flex align-items-start gap-2">
+            <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+            <div>
+              <div class="fw-semibold">{{ alerta_diesel.titulo }}</div>
+              <div class="small">{{ alerta_diesel.msg }}</div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- KPI Cards -->
+    <div class="row g-3 mb-3">
+
+      <!-- GASOLINA -->
+      <div class="col-12 col-lg-6">
+        <div class="card kpi-card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <div class="kpi-label"><i class="bi bi-droplet-half me-2"></i>Gasolina</div>
+                <div class="kpi-value">{{ usado_gas }}<span class="kpi-unit">L</span></div>
+                <div class="kpi-sub text-muted">
+                  Limite: {{ limite_gas }}L • Saldo: {{ saldo_gas }}L
+                </div>
+              </div>
+
+              <span class="pill pill-gas">
+                {% if pct_gas is not none %}
+                  {{ pct_gas|int }}%
+                {% else %}
+                  Sem limite
+                {% endif %}
+              </span>
+            </div>
+
+            {% if pct_gas is not none %}
+              {% set wgas = 100 if pct_gas > 100 else pct_gas %}
+              <div class="progress mt-3 progress-soft" role="progressbar">
+                <div class="progress-bar js-progress"
+                    data-pct="{{ wgas|int }}"
+                    data-kind="gas"
+                    data-raw="{{ pct_gas|int }}"></div>
+              </div>
+              <div class="small text-muted mt-2">
+                {% if pct_gas >= 100 %}
+                  <i class="bi bi-exclamation-triangle-fill"></i> Limite atingido/ultrapassado.
+                {% elif pct_gas >= 80 %}
+                  <i class="bi bi-exclamation-circle-fill"></i> Atenção: acima de 80%.
+                {% else %}
+                  <i class="bi bi-check-circle-fill"></i> Dentro do limite.
+                {% endif %}
+              </div>
+            {% else %}
+              <div class="mt-3 small text-muted">
+                Defina um limite em <strong>Estoque</strong> para acompanhar a porcentagem.
+                {% if u.get('role') == 'admin' %}
+                  <a href="/estoque?mes={{ mes }}" class="ms-1">Ajustar agora</a>
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- DIESEL -->
+      <div class="col-12 col-lg-6">
+        <div class="card kpi-card shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <div class="kpi-label"><i class="bi bi-fuel-pump-diesel me-2"></i>Diesel</div>
+                <div class="kpi-value">{{ usado_diesel }}<span class="kpi-unit">L</span></div>
+                <div class="kpi-sub text-muted">
+                  Limite: {{ limite_diesel }}L • Saldo: {{ saldo_diesel }}L
+                </div>
+              </div>
+
+              <span class="pill pill-diesel">
+                {% if pct_diesel is not none %}
+                  {{ pct_diesel|int }}%
+                {% else %}
+                  Sem limite
+                {% endif %}
+              </span>
+            </div>
+
+            {% if pct_diesel is not none %}
+              {% set wdiesel = 100 if pct_diesel > 100 else pct_diesel %}
+              <div class="progress mt-3 progress-soft" role="progressbar">
+                <div class="progress-bar js-progress"
+                    data-pct="{{ wdiesel|int }}"
+                    data-kind="diesel"
+                    data-raw="{{ pct_diesel|int }}"></div>
+              </div>
+              <div class="small text-muted mt-2">
+                {% if pct_diesel >= 100 %}
+                  <i class="bi bi-exclamation-triangle-fill"></i> Limite atingido/ultrapassado.
+                {% elif pct_diesel >= 80 %}
+                  <i class="bi bi-exclamation-circle-fill"></i> Atenção: acima de 80%.
+                {% else %}
+                  <i class="bi bi-check-circle-fill"></i> Dentro do limite.
+                {% endif %}
+              </div>
+            {% else %}
+              <div class="mt-3 small text-muted">
+                Defina um limite em <strong>Estoque</strong> para acompanhar a porcentagem.
+                {% if u.get('role') == 'admin' %}
+                  <a href="/estoque?mes={{ mes }}" class="ms-1">Ajustar agora</a>
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- BLOCO DE DADOS (para o JS) -->
+    <div id="dashData"
+        data-serie-dias='{{ serie_dias|tojson }}'
+        data-serie-vals='{{ serie_vals|tojson }}'
+        data-usado-gas="{{ usado_gas|int }}"
+        data-usado-diesel="{{ usado_diesel|int }}">
+    </div>
+
+    <!-- ANALYTICS -->
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-lg-8">
+        <div class="card shadow-sm">
+          <div class="card-header header-soft d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <span class="header-icon"><i class="bi bi-graph-up"></i></span>
+              <div>
+                <div class="fw-semibold">Consumo diário (mês)</div>
+                <small class="text-muted">Total entregue por dia no período selecionado.</small>
+              </div>
+            </div>
+            <span class="badge text-bg-secondary">Dias com entrega: {{ (serie_dias|length) }}</span>
+          </div>
+          <div class="card-body">
+            {% if serie_dias and serie_vals %}
+              <div style="height:320px;">
+                <canvas id="chartLinha"></canvas>
+              </div>
+            {% else %}
+              <div class="empty-state">
+                <div class="fw-semibold mb-1">Sem dados para gráfico</div>
+                <div class="text-muted small">Registre entregas para gerar a curva diária do consumo.</div>
+                <a class="btn btn-primary btn-fixed mt-3" href="/entrega?mes={{ mes }}">
+                  <i class="bi bi-plus-circle"></i> Registrar entrega
+                </a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-header header-soft d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <span class="header-icon"><i class="bi bi-pie-chart"></i></span>
+              <div>
+                <div class="fw-semibold">Distribuição</div>
+                <small class="text-muted">Gasolina vs Diesel (mês).</small>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            {% if (usado_gas + usado_diesel) > 0 %}
+              <div style="height:280px;">
+                <canvas id="chartDonut"></canvas>
+              </div>
+            {% else %}
+              <div class="empty-state">
+                <div class="fw-semibold mb-1">Sem entregas neste mês</div>
+                <div class="text-muted small">O gráfico aparece quando houver consumo.</div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AÇÕES + TOP 5 -->
+    <div class="row g-3">
+
+      <!-- Ações rápidas -->
+      <div class="col-12 col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-header header-soft d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <span class="header-icon"><i class="bi bi-lightning-charge"></i></span>
+              <div class="fw-semibold">Ações rápidas</div>
+            </div>
+            <span class="badge text-bg-secondary">Total mês: {{ total_geral }}L</span>
+          </div>
+
+          <div class="card-body d-grid gap-2">
+            <a class="btn btn-primary btn-fixed" href="/entrega?mes={{ mes }}">
+              <i class="bi bi-plus-circle"></i> Nova entrega
+            </a>
+
+            <a class="btn btn-outline-light btn-fixed" href="/entrega?mes={{ mes }}">
+              <i class="bi bi-truck"></i> Ver entregas do mês
+            </a>
+
+            <div class="d-flex gap-2">
+              <a class="btn btn-outline-success btn-fixed w-50" href="/resumo/excel?mes={{ mes }}">
+                <i class="bi bi-file-earmark-excel"></i> Excel
+              </a>
+              <a class="btn btn-outline-danger btn-fixed w-50" href="/resumo/pdf?mes={{ mes }}">
+                <i class="bi bi-filetype-pdf"></i> PDF
+              </a>
+            </div>
+
+            {% if u.get('role') == 'admin' %}
+            <a class="btn btn-outline-warning btn-fixed" href="/estoque?mes={{ mes }}">
+              <i class="bi bi-box-seam"></i> Ajustar estoque
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- TOP 5 -->
+      <div class="col-12 col-lg-8">
+        <div class="card shadow-sm">
+          <div class="card-header header-soft d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <span class="header-icon"><i class="bi bi-trophy"></i></span>
+              <div>
+                <div class="fw-semibold">Top 5 consumo (mês)</div>
+                <small class="text-muted">Quem mais recebeu litros no período.</small>
+              </div>
+            </div>
+            <a class="btn btn-sm btn-outline-light btn-fixed" href="/resumo?mes={{ mes }}">
+              <i class="bi bi-bar-chart-line"></i> Abrir resumo completo
+            </a>
+          </div>
+
+          <div class="card-body">
+            {% if top5 and top5[0][4] > 0 %}
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Equipe</th>
+                    <th class="text-end">Total</th>
+                    <th class="text-end">Ação</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for p in top5 %}
+                  <tr>
+                    <td class="fw-semibold">{{ p[1] }}</td>
+                    <td>{{ p[2] }}</td>
+                    <td>{{ p[3] }}</td>
+                    <td class="text-end">
+                      <span class="badge text-bg-secondary badge-litros">{{ p[4]|int }}L</span>
+                    </td>
+                    <td class="text-end">
+                      <a class="btn btn-sm btn-outline-info btn-fixed"
+                        href="/detalhe?mes={{ mes }}&pessoa_id={{ p[0] }}">
+                        <i class="bi bi-eye"></i> Detalhar
+                      </a>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            {% else %}
+              <div class="empty-state">
+                <div class="fw-semibold mb-1">Sem entregas neste mês</div>
+                <div class="text-muted small">
+                  Registre uma entrega para começar a ver o ranking e os gráficos.
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  {% endblock %}
+
+  {% block scripts %}
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <script>
+  (function () {
+    // Progress bars: largura + cor por risco
+    document.querySelectorAll('.js-progress').forEach(function(el){
+      var pct = parseInt(el.getAttribute('data-pct') || '0', 10);
+      var raw = parseInt(el.getAttribute('data-raw') || '0', 10);
+
+      pct = Math.max(0, Math.min(100, pct));
+      el.style.width = pct + '%';
+
+      el.classList.remove('bg-success','bg-warning','bg-danger');
+      if (raw >= 100) el.classList.add('bg-danger');
+      else if (raw >= 80) el.classList.add('bg-warning');
+      else el.classList.add('bg-success');
+    });
+
+    var dataEl = document.getElementById('dashData');
+    if (!dataEl) return;
+
+    var serieDias = [];
+    var serieVals = [];
+    try {
+      serieDias = JSON.parse(dataEl.getAttribute('data-serie-dias') || '[]');
+      serieVals = JSON.parse(dataEl.getAttribute('data-serie-vals') || '[]');
+    } catch (e) {
+      serieDias = [];
+      serieVals = [];
+    }
+
+    var usadoGas = parseInt(dataEl.getAttribute('data-usado-gas') || '0', 10);
+    var usadoDiesel = parseInt(dataEl.getAttribute('data-usado-diesel') || '0', 10);
+
+    var isDark = document.body.classList.contains('dark');
+    var gridColor = isDark ? 'rgba(255,255,255,.10)' : 'rgba(17,24,39,.12)';
+    var textColor = isDark ? 'rgba(234,242,255,.90)' : 'rgba(17,24,39,.85)';
+
+    function baseOptions() {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: textColor } },
+          tooltip: { enabled: true }
+        }
+      };
+    }
+
+    var elLinha = document.getElementById('chartLinha');
+    if (elLinha && serieDias.length) {
+      new Chart(elLinha, {
+        type: 'line',
+        data: {
+          labels: serieDias,
+          datasets: [{
+            label: 'Litros (total)',
+            data: serieVals,
+            tension: 0.35,
+            fill: true
+          }]
+        },
+        options: Object.assign({}, baseOptions(), {
+          scales: {
+            x: { ticks: { color: textColor }, grid: { color: gridColor } },
+            y: { ticks: { color: textColor }, grid: { color: gridColor } }
+          }
+        })
+      });
+    }
+
+    var elDonut = document.getElementById('chartDonut');
+    if (elDonut && (usadoGas + usadoDiesel) > 0) {
+      new Chart(elDonut, {
+        type: 'doughnut',
+        data: {
+          labels: ['Gasolina', 'Diesel'],
+          datasets: [{ data: [usadoGas, usadoDiesel] }]
+        },
+        options: Object.assign({}, baseOptions(), { cutout: '65%' })
+      });
+    }
+  })();
+  </script>
+</div>
+
+{% endblock %}
