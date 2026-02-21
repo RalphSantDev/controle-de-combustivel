@@ -5,22 +5,25 @@ __pycache__/
 
 # Virtual Environment
 venv/
+.venv/
+
+# Environment Variables
 .env
 .env.*
 
 # Database
 *.db
 *.sqlite3
-database/db.sqlite3
 
-# VSCode
+# VS Code
 .vscode/
-
-# Mac
-.DS_Store
 
 # Logs
 *.log
 
-# Environment variables
-.env
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Instance folder (Flask padrão)
+instance/
