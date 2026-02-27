@@ -68,5 +68,3 @@ Exportação para Excel
 ### Entregas
 ![Entregas](screenshots/entregas.jpeg)
 
-### Menu
-![Menu lateral](screenshots/menulateral.jpeg)
