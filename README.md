@@ -4,7 +4,6 @@
 ![Flask](https://img.shields.io/badge/Flask-Framework-black?logo=flask)
 ![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?logo=sqlite)
 ![Bootstrap](https://img.shields.io/badge/Bootstrap-5-purple?logo=bootstrap)
-![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 Aplicação web desenvolvida em **Python com Flask**, projetada para controle completo de estoque de combustível, com foco em **segurança, rastreabilidade, integridade de dados e controle de acesso baseado em funções**.
@@ -104,22 +103,3 @@ Esse módulo garante **transparência e accountability**, fundamentais em ambien
 ### 🚛 Entregas
 ![Entregas](screenshots/entregas.jpeg)
 
----
-
-## 🧠 Diferenciais Técnicos
-
-- Estrutura preparada para escalar para PostgreSQL  
-- Separação clara entre regras de negócio e interface  
-- Código organizado para manutenção futura  
-- Foco em segurança e controle de acesso  
-- Aplicação pronta para deploy em rede interna  
-
----
-
-## 🚀 Possíveis Evoluções Futuras
-
-- Dashboard com indicadores visuais (gráficos)  
-- Controle de estoque mínimo com alertas  
-- Backup automático do banco  
-- API REST para integração com outros sistemas  
-- Logs avançados para auditoria de segurança 
