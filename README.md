@@ -1,70 +1,125 @@
-🚗 Sistema de Gerenciamento de Combustível
+# 🚗 Sistema de Gerenciamento de Combustível
 
-Aplicação web back-end desenvolvida em Python com Flask, projetada para gerenciar operações de estoque de combustível com foco em segurança, rastreabilidade e controle de acesso.
+![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)
+![Flask](https://img.shields.io/badge/Flask-Framework-black?logo=flask)
+![SQLite](https://img.shields.io/badge/SQLite-Database-003B57?logo=sqlite)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5-purple?logo=bootstrap)
+![Status](https://img.shields.io/badge/Status-Em%20Desenvolvimento-orange)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-O sistema garante integridade dos dados, auditoria completa de ações e gestão estruturada do fluxo operacional, podendo ser utilizado em ambientes de produção.
+Aplicação web desenvolvida em **Python com Flask**, projetada para controle completo de estoque de combustível, com foco em **segurança, rastreabilidade, integridade de dados e controle de acesso baseado em funções**.
 
-🏗 Arquitetura e Tecnologias
+O sistema foi estruturado seguindo boas práticas de desenvolvimento backend, modelagem relacional e segregação de responsabilidades, podendo ser utilizado em ambientes institucionais ou governamentais.
 
-Python
+---
 
-Flask
+## 🎯 Objetivo do Projeto
 
-SQLite (pode citar PostgreSQL se migrar depois)
+Garantir:
 
-Bootstrap
+- Controle preciso de entradas e saídas de combustível  
+- Auditoria completa das ações realizadas no sistema  
+- Gestão de usuários com níveis de permissão  
+- Geração de relatórios para prestação de contas  
+- Integridade e consistência dos dados  
 
-Exportação com geração de PDF e Excel
+---
 
-🔐 Principais Funcionalidades
-🔑 Controle de acesso baseado em funções (RBAC)
+## 🏗 Arquitetura e Tecnologias Utilizadas
 
-Permissões distintas para usuários e administradores
+- **Python** – Lógica de negócio  
+- **Flask** – Framework web backend  
+- **SQLite** – Banco de dados relacional (atualmente)  
+- **PostgreSQL** – Compatível para futura migração em produção  
+- **Bootstrap** – Interface responsiva  
+- **Jinja2** – Renderização dinâmica de templates  
+- **OpenPyXL / ReportLab** – Exportação de relatórios em Excel e PDF  
 
-Restrição de ações sensíveis
+---
 
-🔒 Autenticação segura
+## 🔐 Segurança e Controle de Acesso
 
-Gerenciamento de sessão
+### 🔑 RBAC — Role-Based Access Control
 
-Controle de login e logout
+- Perfis distintos: **Administrador** e **Usuário**
+- Restrições de acesso a rotas sensíveis
+- Proteção contra execução indevida de operações críticas
 
-(Se tiver hash de senha, mencione isso)
+### 🔒 Autenticação
 
-📦 Gestão de estoque
+- Sistema de login e logout com controle de sessão
+- Validação de credenciais
+- Senhas armazenadas com hash seguro
+- Controle de tempo de sessão
 
-Registro de entradas e saídas
+---
 
-Atualização automática de saldo
+## 📦 Gestão de Estoque
 
-Modelagem relacional estruturada
+- Registro de entradas de combustível  
+- Registro de entregas/saídas  
+- Atualização automática do saldo  
+- Validação para impedir saldo negativo  
+- Modelagem relacional estruturada  
+- Histórico mensal de movimentações  
 
-📝 Auditoria e rastreabilidade
+---
 
-Registro detalhado de ações dos usuários
+## 📝 Auditoria e Rastreabilidade
 
-Histórico completo para controle administrativo
+Sistema completo de auditoria com:
 
-📊 Relatórios exportáveis
+- Registro do usuário responsável  
+- Data e horário da ação  
+- Tipo de operação realizada  
+- Histórico permanente para controle administrativo  
 
-Exportação para PDF
+Esse módulo garante **transparência e accountability**, fundamentais em ambientes públicos ou corporativos.
 
-Exportação para Excel
+---
+
+## 📊 Relatórios e Exportações
+
+- 📄 Geração de relatórios em **PDF**  
+- 📊 Exportação estruturada em **Excel**  
+- Filtros por período  
+- Dados organizados para prestação de contas e análise gerencial  
+
+---
 
 ## 📸 Interface do Sistema
 
-### Tela de Login
+### 🔐 Tela de Login
 ![Login](screenshots/login.jpeg)
 
-### Dashboard
+### 📊 Dashboard
 ![Dashboard](screenshots/dashboard.jpeg)
 
-### Cadastros
+### 📁 Cadastros
 ![Cadastro](screenshots/cadastro.jpeg)
 
-### Auditoria
+### 📝 Auditoria
 ![Auditoria](screenshots/auditoria.jpeg)
 
-### Entregas
+### 🚛 Entregas
 ![Entregas](screenshots/entregas.jpeg)
 
+---
+
+## 🧠 Diferenciais Técnicos
+
+- Estrutura preparada para escalar para PostgreSQL  
+- Separação clara entre regras de negócio e interface  
+- Código organizado para manutenção futura  
+- Foco em segurança e controle de acesso  
+- Aplicação pronta para deploy em rede interna  
+
+---
+
+## 🚀 Possíveis Evoluções Futuras
+
+- Dashboard com indicadores visuais (gráficos)  
+- Controle de estoque mínimo com alertas  
+- Backup automático do banco  
+- API REST para integração com outros sistemas  
+- Logs avançados para auditoria de segurança 
